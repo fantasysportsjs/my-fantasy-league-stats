@@ -1,0 +1,432 @@
+:root {
+  --bg: #F6F7F3;
+  --ink: #16191C;
+  --ink-soft: #565D57;
+  --line: #D8DCD3;
+  --panel: #FFFFFF;
+  --field: #2F5D50;
+  --field-soft: #E4EDE8;
+  --gold: #B9852E;
+  --loss: #A94A3D;
+  font-size: 16px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, sans-serif;
+  line-height: 1.5;
+}
+
+h1, h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.section-sub {
+  color: var(--ink-soft);
+  margin: 0.25rem 0 1.5rem 0;
+  max-width: 60ch;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  z-index: 10;
+}
+
+.topbar-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.league-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--field);
+  white-space: nowrap;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.tab-link {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.tab-link:hover { background: var(--field-soft); color: var(--ink); }
+.tab-link.active { color: var(--field); font-weight: 600; }
+
+/* ---------- Layout ---------- */
+main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section {
+  padding: 3.5rem 0;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 4.5rem;
+}
+
+.section:last-of-type { border-bottom: none; }
+
+/* ---------- Hero ---------- */
+.hero {
+  padding-top: 3rem;
+}
+
+.hero h1 {
+  font-size: 2.1rem;
+  max-width: 40ch;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-stat .value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--field);
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-stat .label {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- Tables ---------- */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+thead th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--ink);
+  color: var(--ink-soft);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Sortable column headers */
+th .sort-btn {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: inherit;
+  color: inherit;
+  white-space: nowrap;
+}
+
+th .sort-btn:hover { color: var(--ink); }
+
+th .sort-btn:focus-visible {
+  outline: 2px solid var(--field);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.sort-arrow::after {
+  content: '\2195';
+  opacity: 0.35;
+  font-size: 0.8em;
+}
+
+th[aria-sort="ascending"] .sort-arrow::after {
+  content: '\25B2';
+  opacity: 1;
+  color: var(--field);
+}
+
+th[aria-sort="descending"] .sort-arrow::after {
+  content: '\25BC';
+  opacity: 1;
+  color: var(--field);
+}
+
+th[aria-sort="ascending"],
+th[aria-sort="descending"] { color: var(--ink); }
+
+tbody td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+tbody tr:hover { background: var(--field-soft); }
+
+td.rank-1 { color: var(--gold); font-weight: 700; }
+
+/* ---------- Records grid ---------- */
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.record-card {
+  background: var(--panel);
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--field);
+}
+
+.record-card.wide { grid-column: 1 / -1; }
+
+.closest-list {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+}
+
+.closest-list li {
+  display: grid;
+  grid-template-columns: 1.5rem 6rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.6rem 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+}
+
+.closest-list .n { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+.closest-list .margin {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.closest-list .detail { font-variant-numeric: tabular-nums; }
+
+.closest-list .when {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* ---------- Managers & team names ---------- */
+.manager-controls { margin-bottom: 1.25rem; }
+
+.manager-controls select,
+.h2h-controls select {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--ink);
+  min-width: 14rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.manager-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--field);
+  padding: 1.1rem 1.25rem;
+  max-width: 34rem;
+}
+
+.manager-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 0;
+}
+
+.manager-meta {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  margin: 0.15rem 0 0.7rem;
+}
+
+.team-history {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.team-history li {
+  display: grid;
+  grid-template-columns: 5.2rem 1fr;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+}
+
+.team-history .yrs {
+  color: var(--field);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-history .tname { overflow-wrap: anywhere; }
+
+.record-card .label {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+
+.record-card .value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.record-card .context {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
+}
+
+/* ---------- Head to head ---------- */
+.h2h-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.h2h-controls select {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--ink);
+}
+
+.vs {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.h2h-summary {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.h2h-log {
+  font-size: 0.9rem;
+}
+
+.h2h-log .game-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+
+.h2h-log .game-row .winner { color: var(--ink); font-weight: 600; }
+
+/* ---------- History ---------- */
+.season-block {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: 1.5rem;
+  align-items: baseline;
+}
+
+.season-block:last-child { border-bottom: none; }
+
+.season-year {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  width: 4.5rem;
+  flex-shrink: 0;
+  color: var(--field);
+}
+
+.season-details .champion {
+  font-weight: 600;
+}
+
+.season-details .runner-up {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  padding: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .tabs { gap: 0; }
+  .tab-link { padding: 0.35rem 0.5rem; font-size: 0.8rem; }
+  .hero h1 { font-size: 1.6rem; }
+  .hero-stat .value { font-size: 1.8rem; }
+}

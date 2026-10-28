@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>League History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="league-name" id="league-name">League History</span>
+    <nav class="tabs">
+      <button class="tab-link active" data-target="hero">Overview</button>
+      <button class="tab-link" data-target="standings">Standings</button>
+      <button class="tab-link" data-target="alltime">All-Time</button>
+      <button class="tab-link" data-target="records">Records</button>
+      <button class="tab-link" data-target="h2h">Head-to-Head</button>
+      <button class="tab-link" data-target="managers">Managers</button>
+      <button class="tab-link" data-target="history">Seasons</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section id="hero" class="section hero">
+    <h1 id="hero-title">Loading league history&hellip;</h1>
+    <div class="hero-stats" id="hero-stats"></div>
+  </section>
+
+  <section id="standings" class="section">
+    <h2>Latest Standings</h2>
+    <p class="section-sub" id="standings-year"></p>
+    <div class="table-wrap">
+      <table id="standings-table">
+        <thead>
+          <tr><th>Rank</th><th>Manager</th><th>Team</th><th>Record</th><th>Points For</th><th>Points Against</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="alltime" class="section">
+    <h2>All-Time Standings</h2>
+    <p class="section-sub">Every regular-season and playoff game, added up across every year.</p>
+    <div class="table-wrap">
+      <table id="alltime-table">
+        <thead>
+          <tr>
+            <th data-key="manager" aria-sort="none"><button type="button" class="sort-btn">Manager<span class="sort-arrow" aria-hidden="true"></span></button></th>
+            <th data-key="record" aria-sort="none"><button type="button" class="sort-btn">Record<span class="sort-arrow" aria-hidden="true"></span></button></th>
+            <th data-key="winPct" aria-sort="none"><button type="button" class="sort-btn">Win %<span class="sort-arrow" aria-hidden="true"></span></button></th>
+            <th data-key="titles" aria-sort="none"><button type="button" class="sort-btn">Titles<span class="sort-arrow" aria-hidden="true"></span></button></th>
+            <th data-key="pointsFor" aria-sort="none"><button type="button" class="sort-btn">Points For<span class="sort-arrow" aria-hidden="true"></span></button></th>
+            <th data-key="pointsAgainst" aria-sort="none"><button type="button" class="sort-btn">Points Against<span class="sort-arrow" aria-hidden="true"></span></button></th>
+            <th data-key="avgFinish" aria-sort="none"><button type="button" class="sort-btn">Avg Finish<span class="sort-arrow" aria-hidden="true"></span></button></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="records" class="section">
+    <h2>League Records</h2>
+    <p class="section-sub">The extremes &mdash; best, worst, and most memorable games on record.</p>
+    <div class="records-grid" id="records-grid"></div>
+  </section>
+
+  <section id="h2h" class="section">
+    <h2>Head-to-Head</h2>
+    <p class="section-sub">Pick two managers to see their all-time series.</p>
+    <div class="h2h-controls">
+      <select id="h2h-manager-a"></select>
+      <span class="vs">vs</span>
+      <select id="h2h-manager-b"></select>
+    </div>
+    <div id="h2h-result"></div>
+  </section>
+
+  <section id="managers" class="section">
+    <h2>Managers &amp; Team Names</h2>
+    <p class="section-sub">Pick a manager to see every team name they've used, oldest first.</p>
+    <div class="manager-controls">
+      <label for="manager-select" class="visually-hidden">Manager</label>
+      <select id="manager-select"></select>
+    </div>
+    <div id="manager-detail"></div>
+  </section>
+
+  <section id="history" class="section">
+    <h2>Season by Season</h2>
+    <div id="history-list"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <p>Built from your own Yahoo Fantasy league data.</p>
+</footer>
+
+<script src="app.js?v=2"></script>
+</body>
+</html>
