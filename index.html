@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -21,6 +21,8 @@
       <button class="tab-link" data-target="records">Records</button>
       <button class="tab-link" data-target="h2h">Head-to-Head</button>
       <button class="tab-link" data-target="managers">Managers</button>
+      <button class="tab-link" data-target="draft" id="draft-tab" hidden>Draft</button>
+      <button class="tab-link" data-target="timeline">Timeline</button>
       <button class="tab-link" data-target="history">Seasons</button>
     </nav>
   </div>
@@ -94,6 +96,23 @@
     <div id="manager-detail"></div>
   </section>
 
+  <section id="draft" class="section" hidden>
+    <h2>Draft &amp; Players</h2>
+    <p class="section-sub">Pick a year to see the draft board, that season's top scorers, and the best player on the champion's roster. <strong>Finish</strong> is where a player ranked in season points among everyone drafted that year; <strong>Value</strong> is the pick number minus that finish, so a positive number means he outplayed his draft spot.</p>
+    <div class="manager-controls">
+      <label for="draft-select" class="visually-hidden">Season</label>
+      <select id="draft-select"></select>
+    </div>
+    <div id="draft-detail"></div>
+  </section>
+
+  <section id="timeline" class="section">
+    <h2>League Timeline</h2>
+    <p class="section-sub">Every manager, every season. A colored block means they played that year; a black block means they won the title.</p>
+    <div class="table-wrap"><div id="timeline-chart"></div></div>
+    <p class="timeline-legend"><span class="swatch champ"></span> Championship winner</p>
+  </section>
+
   <section id="history" class="section">
     <h2>Season by Season</h2>
     <div id="history-list"></div>
@@ -105,6 +124,6 @@
   <p>Built from your own Yahoo Fantasy league data.</p>
 </footer>
 
-<script src="app.js?v=2"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

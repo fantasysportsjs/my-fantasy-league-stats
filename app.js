@@ -523,6 +523,195 @@ function renderManagers(seasons) {
   show();
 }
 
+function renderTimeline(seasons) {
+  const host = document.getElementById('timeline-chart');
+  const years = seasons.map(s => s.year).sort((a, b) => a - b);
+  const info = {};
+  seasons.forEach(s => {
+    s.teams.forEach(t => {
+      const m = info[t.manager] = info[t.manager] || { name: t.manager, played: {} };
+      m.played[s.year] = t.rank === 1 ? 'champ' : 'in';
+    });
+  });
+  const rows = Object.values(info).map(m => {
+    const ys = Object.keys(m.played).map(Number);
+    return { ...m, first: Math.min(...ys), count: ys.length };
+  }).sort((a, b) => a.first - b.first || b.count - a.count || a.name.localeCompare(b.name));
+  // Spread colors around the color wheel so neighbors differ.
+  rows.forEach((r, i) => {
+    const hue = Math.round((i * 137.508) % 360);
+    const light = [48, 40, 56][i % 3];
+    r.color = `hsl(${hue}, 65%, ${light}%)`;
+  });
+  const head = years.map(y => `<th scope="col">${y}</th>`).join('');
+  const body = rows.map(r => {
+    const cells = years.map(y => {
+      const st = r.played[y];
+      if (!st) return '<td></td>';
+      const label = `${esc(r.name)}, ${y}${st === 'champ' ? ' (champion)' : ''}`;
+      return st === 'champ'
+        ? `<td class="champ" title="${label}"></td>`
+        : `<td style="background:${r.color}" title="${label}"></td>`;
+    }).join('');
+    return `<tr><th scope="row">${esc(r.name)}</th>${cells}</tr>`;
+  }).join('');
+  host.innerHTML = `<table class="timeline"><thead><tr><td></td>${head}</tr></thead><tbody>${body}</tbody></table>`;
+}
+
+// ---------------------------------------------------------------------
+// Draft & player data (optional: only shown if data/players.json exists)
+// ---------------------------------------------------------------------
+async function loadPlayers() {
+  try {
+    const res = await fetch('data/players.json');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    return null;
+  }
+}
+
+const fmtValue = v => v === null || v === undefined
+  ? '—'
+  : `<span class="${v > 0 ? 'val-up' : v < 0 ? 'val-down' : ''}">${v > 0 ? '+' : v < 0 ? '\u2212' : ''}${Math.abs(v)}</span>`;
+
+const pickedUpBy = teams => {
+  const t = teams || [];
+  return t.length ? `picked up by ${esc(t.slice(0, 2).join(' / '))}${t.length > 2 ? ` +${t.length - 2}` : ''}` : '';
+};
+
+function renderDraft(players) {
+  const section = document.getElementById('draft');
+  const tab = document.getElementById('draft-tab');
+  const select = document.getElementById('draft-select');
+  const detail = document.getElementById('draft-detail');
+  const years = Object.keys(players.seasons).sort((a, b) => b - a);
+  if (!years.length) return;
+  section.hidden = false;
+  tab.hidden = false;
+  select.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
+
+  function show() {
+    const s = players.seasons[select.value];
+    const champ = s.champion;
+    const champCard = champ ? `
+      <div class="record-card">
+        <div class="label">Best player on the champion's roster</div>
+        <div class="value">${esc(champ.player)}</div>
+        <div class="context">${fmtPts(champ.pts)} pts as a starter for ${esc(champ.manager)} (${esc(champ.team)})</div>
+      </div>` : '';
+    const tops = s.topPlayers.map((p, i) => `
+      <li><span>${i + 1}. ${esc(p.player)} <span class="pos-tag">${esc(p.pos || '')}
+        (${p.pick ? `${esc(p.draftedBy)}, Pick ${p.pick}` : `Undrafted, ${esc((p.teams || []).join(' / ') || 'free agent')}`})</span></span>
+      <span>${fmtPts(p.pts)}</span></li>`).join('');
+    const undrafted = (s.topUndrafted || []).map((p, i) => `
+      <li><span>${i + 1}. ${esc(p.player)} <span class="pos-tag">${esc(p.pos || '')} (${pickedUpBy(p.teams)})</span></span>
+      <span>${fmtPts(p.pts)}</span></li>`).join('');
+    const ROUNDS_STEP = 2;
+    const maxRound = Math.max(...s.draft.map(p => p.round));
+    const rowsFor = limit => s.draft.filter(p => p.round <= limit).map(p => `
+      <tr>
+        <td class="num">${p.pick}</td>
+        <td class="num">${p.round}</td>
+        <td>${esc(p.manager)}</td>
+        <td>${esc(p.player)} <span class="pos-tag">${esc(p.pos || '')}</span></td>
+        <td class="num">${p.pts === null ? '—' : fmtPts(p.pts)}</td>
+        <td class="num">${p.rank === null ? '—' : p.rank}</td>
+        <td class="num">${fmtValue(p.value)}</td>
+      </tr>`).join('');
+    detail.innerHTML = `
+      <div class="draft-grid">
+        ${champCard}
+        <div class="record-card">
+          <div class="label">Top scorers this season</div>
+          <ol class="mini-list" style="list-style:none">${tops}</ol>
+        </div>
+        ${(s.topUndrafted || []).length ? `
+        <div class="record-card">
+          <div class="label">Top undrafted players this season</div>
+          <ol class="mini-list" style="list-style:none">${undrafted}</ol>
+        </div>` : ''}
+      </div>
+      <div class="table-wrap">
+        <table class="draft-table">
+          <thead><tr><th class="num">Pick</th><th class="num">Rd</th><th>Manager</th><th>Player</th><th class="num">Points</th><th class="num">Finish</th><th class="num">Value</th></tr></thead>
+          <tbody id="draft-rows"></tbody>
+        </table>
+      </div>
+      <div class="draft-more"><button type="button" class="more-btn" id="draft-more-btn"></button></div>`;
+
+    let shown = ROUNDS_STEP;
+    const body = document.getElementById('draft-rows');
+    const btn = document.getElementById('draft-more-btn');
+    function paint() {
+      body.innerHTML = rowsFor(shown);
+      if (maxRound <= ROUNDS_STEP) { btn.hidden = true; return; }
+      btn.hidden = false;
+      btn.textContent = shown >= maxRound
+        ? 'Show fewer rounds'
+        : `Show rounds ${shown + 1}\u2013${Math.min(shown + ROUNDS_STEP, maxRound)} (of ${maxRound})`;
+    }
+    btn.addEventListener('click', () => {
+      shown = shown >= maxRound ? ROUNDS_STEP : shown + ROUNDS_STEP;
+      paint();
+    });
+    paint();
+  }
+  select.addEventListener('change', show);
+  show();
+}
+
+function renderPlayerRecords(players) {
+  const grid = document.getElementById('records-grid');
+  const r = players.records;
+  const draftItems = list => list.map((p, i) => `
+    <li>
+      <span class="n">${i + 1}</span>
+      <span class="margin">${p.value > 0 ? '+' : '\u2212'}${Math.abs(p.value)}</span>
+      <span class="detail">${esc(p.player)} <span class="pos-tag">${esc(p.pos || '')}</span> &mdash; ${esc(p.manager)}
+        <span class="when">${p.year}, pick ${p.pick} (round ${p.round}), finished #${p.rank} in points</span>
+      </span>
+    </li>`).join('');
+  const lowItems = r.lowestFullLineup.map((g, i) => `
+    <li>
+      <span class="n">${i + 1}</span>
+      <span class="margin">${fmtScore(g.pts)}</span>
+      <span class="detail">${esc(g.manager)}
+        <span class="when">Week ${g.week}, ${g.year}${g.playoffs ? ' \u00B7 Playoffs' : ''}</span>
+      </span>
+    </li>`).join('');
+  const undItems = (r.undrafted || []).map((p, i) => `
+    <li>
+      <span class="n">${i + 1}</span>
+      <span class="margin">${fmtPts(p.pts)}</span>
+      <span class="detail">${esc(p.player)} <span class="pos-tag">${esc(p.pos || '')}</span>
+        <span class="when">${p.year}, ${pickedUpBy(p.teams)}</span>
+      </span>
+    </li>`).join('');
+  const champItems = r.championTopPlayers.slice(0, 5).map((p, i) => `
+    <li>
+      <span class="n">${i + 1}</span>
+      <span class="margin">${fmtPts(p.pts)}</span>
+      <span class="detail">${esc(p.player)} <span class="pos-tag">${esc(p.pos || '')}</span> &mdash; ${esc(p.manager)}
+        <span class="when">${p.year} champion (${esc(p.team)})</span>
+      </span>
+    </li>`).join('');
+  const card = (title, items, note) => `
+    <div class="record-card wide">
+      <div class="label">${title}</div>
+      <ol class="closest-list">${items}</ol>
+      ${note ? `<p class="record-note">${note}</p>` : ''}
+    </div>`;
+  grid.innerHTML += card('Lowest Scores With a Set Lineup', lowItems, '')
+    + card('Biggest Draft Steals', draftItems(r.steals),
+      'Pick number minus finish in season points among all players drafted that year. Kickers and defenses not counted.')
+    + card('Biggest Draft Busts', draftItems(r.busts), '')
+    + (undItems ? card('Best Undrafted Players', undItems,
+      'Players nobody drafted, ranked by season points. Kickers and defenses not counted.') : '')
+    + card('Most Points From One Player on a Championship Team', champItems,
+      'Points scored while in a starting lineup spot.');
+}
+
 function renderHistory(seasons) {
   const list = document.getElementById('history-list');
   const sorted = [...seasons].sort((a, b) => b.year - a.year);
@@ -578,6 +767,9 @@ async function init() {
     renderRecords(data.seasons);
     renderH2H(data.seasons);
     renderManagers(data.seasons);
+    const players = await loadPlayers();
+    if (players) { renderPlayerRecords(players); renderDraft(players); }
+    renderTimeline(data.seasons);
     renderHistory(data.seasons);
     setupTabs();
   } catch (err) {
